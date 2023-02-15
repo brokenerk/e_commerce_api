@@ -30,13 +30,14 @@ class Login(Resource, BaseSerializer):
 
                 return {
                     'token': access_token,
-                    'data': logedUser.serialize()
+                    'user': logedUser.serialize()
                 }, 200
             else:
                 print("Contraseña incorrecta")
-                return 
+                return { "message": "Password is wrong" }, 500
         else:
             print("Usuario no encontrado")
+            return { "message": "Username is wrong" }, 500
 
 
 api.add_resource(Login, '/e_commerce/login')
