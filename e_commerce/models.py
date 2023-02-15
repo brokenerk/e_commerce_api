@@ -7,10 +7,17 @@ class UserModel(db.Model, BaseSerializer):
 
     fields = ['id_user', 'tx_login', 'tx_password']
 
-    id_user = db.Column('id_user', db.Integer, db.ForeignKey("person.id_person"), primary_key=True, autoincrement=True)
-    person = db.relationship("PersonModel", backref="users", lazy=True)
+    id_user = db.Column('id_user', db.Integer, primary_key=True, autoincrement=True)
     tx_login = db.Column(db.String)
     tx_password = db.Column(db.String)
+    person = db.relationship("PersonModel", backref="users", lazy=True)
+    access = db.relationship("AccessModel", backref="users", lazy=True)
+    orders = db.relationship("OrderModel", backref="users", lazy=True)
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter(cls.id_user == id).first()
+    
 
 
 class PersonModel(db.Model, BaseSerializer):
@@ -19,7 +26,7 @@ class PersonModel(db.Model, BaseSerializer):
 
     fields = ['id_person', 'tx_first_name', 'tx_last_name_a', 'tx_last_name_b', 'tx_street' 'tx_city', 'tx_state','tx_zipcode','tx_telephone']
 
-    id_person = db.Column('id_person', db.Integer, primary_key=True, autoincrement=True)
+    id_person = db.Column('id_person', db.Integer, db.ForeignKey("users.id_user"), primary_key=True, autoincrement=True)
     tx_first_name = db.Column(db.String)
     tx_last_name_a = db.Column(db.String)
     tx_last_name_b = db.Column(db.String)
@@ -37,7 +44,6 @@ class AccessModel(db.Model, BaseSerializer):
     fields = ['id_access', 'nu_attempt', 'fh_failed', 'fh_lock']
 
     id_access = db.Column('id_access', db.Integer, db.ForeignKey("users.id_user"), primary_key=True, autoincrement=True)
-    user = db.relationship("UserModel", backref="access", lazy=True)
     nu_attempt = db.Column(db.Integer)
     fh_failed = db.Column(db.DateTime)
     fh_lock = db.Column(db.DateTime)
@@ -66,7 +72,7 @@ class ProductModel(db.Model, BaseSerializer):
     
     @classmethod
     def find_by_id(cls, id):
-        return cls.query.filter(id_product = id).first()
+        return cls.query.filter(cls.id_product == id).first()
     
 
 class OrderDetailModel(db.Model, BaseSerializer):
@@ -79,7 +85,6 @@ class OrderDetailModel(db.Model, BaseSerializer):
     id_order = db.Column('id_order', db.Integer, db.ForeignKey("order_c.id_order"), primary_key=True)
     nu_amount = db.Column(db.Integer)
     product = db.relationship("ProductModel", backref="order_detail", lazy=True)
-    # order = db.relationship("OrderModel", backref="order_detail", lazy=True)
     
 
 class OrderModel(db.Model, BaseSerializer):
@@ -93,5 +98,5 @@ class OrderModel(db.Model, BaseSerializer):
     st_purchased = db.Column(db.Boolean)
     ft_total = db.Column(db.Float)
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
-    user = db.relationship("UserModel", backref="order_c", lazy=True)
+    order_details = db.relationship("OrderDetailModel", backref="order_c", lazy=True)
     
