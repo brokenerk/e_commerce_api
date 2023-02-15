@@ -18,6 +18,9 @@ class UserModel(db.Model, BaseSerializer):
     def find_by_id(cls, id):
         return cls.query.filter(cls.id_user == id).first()
     
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter(cls.tx_login == username).first()
 
 
 class PersonModel(db.Model, BaseSerializer):

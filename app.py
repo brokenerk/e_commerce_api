@@ -1,14 +1,15 @@
 from flask import Flask, jsonify
-from e_commerce.settings.exts import db, cors, api
+from e_commerce.settings.exts import db, cors, api, jwt
 from e_commerce.settings.utils import ApiException
 from e_commerce.resources.products import api_bp as api_products
-# from login import api_bp as api_login
+from login import api_bp as api_login
 
 
 def register_exts(app):
     db.init_app(app)
     cors.init_app(app)
     api.init_app(app)
+    jwt.init_app(app)
     # mail.init_app(app)
 
 
@@ -17,6 +18,7 @@ def register_error_handlers(app):
 
 
 def register_blueprints(app):
+    app.register_blueprint(api_login)
     app.register_blueprint(api_products)
 
 
