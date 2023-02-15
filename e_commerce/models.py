@@ -22,6 +22,31 @@ class UserModel(db.Model, BaseSerializer):
     def find_by_username(cls, username):
         return cls.query.filter(cls.tx_login == username).first()
 
+    def add_user(self):
+        try:
+            access = AccessModel(
+                id_access = self.id_user,
+                nu_attempt = 0
+            )
+            db.session.add(self)
+            db.session.add(access)
+        except Exception as e:
+            db.session.rollback()
+            print(str(e))
+            print("Error al registrar nuevo usuario")
+
+    def find_cart(self):
+        for order in self.orders:
+            if not order.st_purchased:
+                return order
+        return None
+
+    def find_orders(self):
+        orders = []
+        for order in self.orders:
+            if order.st_purchased:
+                orders.append(order)
+        return orders
 
 class PersonModel(db.Model, BaseSerializer):
     __tablename__ = "person"
@@ -67,7 +92,8 @@ class ProductModel(db.Model, BaseSerializer):
 
     @property
     def real_price(self):
-        return self.ft_price * (1 - (self.ft_discount * 0.01))
+        real_price = self.ft_price - (self.ft_price * (self.ft_discount / 100.0))
+        return float(f"{real_price:.3g}")
 
     @classmethod
     def find_all_products(cls):
@@ -88,13 +114,17 @@ class OrderDetailModel(db.Model, BaseSerializer):
     id_order = db.Column('id_order', db.Integer, db.ForeignKey("order_c.id_order"), primary_key=True)
     nu_amount = db.Column(db.Integer)
     product = db.relationship("ProductModel", backref="order_detail", lazy=True)
+
+    @classmethod
+    def find_order_detail(cls, id_order, id_product):
+        return cls.query.filter(cls.id_order == id_order, cls.id_product == id_product).first()
     
 
 class OrderModel(db.Model, BaseSerializer):
     __tablename__ = "order_c"
     __bind_key__ = "e_commerce"
 
-    fields = ['id_order', 'fh_date', 'st_purchased', 'ft_total', 'id_user']
+    fields = ['id_order', 'fh_date', 'st_purchased', 'ft_total', 'id_user', 'total_formatted']
 
     id_order= db.Column('id_order', db.Integer, primary_key=True)
     fh_date = db.Column(db.DateTime)
@@ -102,4 +132,83 @@ class OrderModel(db.Model, BaseSerializer):
     ft_total = db.Column(db.Float)
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
     order_details = db.relationship("OrderDetailModel", backref="order_c", lazy=True)
+
+    @property
+    def total_formatted(self):
+        return float(f"{self.ft_total:.3g}")
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter(cls.id_order == id).first()
+    
+    def add_product(self, id_product, amount):
+        exists = False
+        for od in self.order_details:
+            product = od.product
+            if id_product == product.id_product:
+                exists = True
+                print("----------->El producto ya esta en el carrito. No agregamos")
+                break
+
+        if not exists:
+            try:
+                new_od = OrderDetailModel(
+                    id_order = self.id_order,
+                    id_product = id_product,
+                    nu_amount = amount
+                )
+                db.session.add(new_od)
+            except Exception as e:
+                db.session.rollback()
+                print(str(e))
+                print("Error al agregar producto al carrito")
+            return True
+        else:
+            return False
+
+    def update_amount(self, product, add):
+        new_price = None
+        try:
+            new_amount = 0
+            od = OrderDetailModel.find_order_detail(self.id_order, product.id_product)
+
+            if add:
+                print("------------->Incrementamos")
+                new_amount = od.nu_amount + 1
+                new_price = self.ft_total + product.real_price
+            else:
+                print("------------->Decrementamos")
+                new_amount = od.nu_amount - 1
+                new_price = self.ft_total - product.real_price
+            
+            # Si no hay cantidad, eliminamos producto
+            if new_amount == 0:
+                print("------------->Sin cantidad, eliminamos producto")
+                self.remove_product(product.id_product)
+            else:
+                print("------------->Actualizamos cantidad")
+                od.nu_amount = new_amount
+                db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            print(str(e))
+            print("Error al incrementar producto del carrito")
+
+        return new_price
+
+    def remove_product(self, id_product):
+        try:
+            od = OrderDetailModel.find_order_detail(self.id_order, id_product)
+            db.session.delete(od)
+        except Exception as e:
+            db.session.rollback()
+            print(str(e))
+            print("Error al eliminar producto del carrito")
+    
+    def update_stock(self):
+        for od in self.order_details:
+            product = od.product
+            product.nu_stock -= od.nu_amount
+        
     
