@@ -66,9 +66,10 @@ class CartResources(Resource):
 
             # Si se agrego, actualizamos la orden, sino, acabamos. 
             # Tambien revisamos si es el primer articulo en el carrito
-            if added and not first_time:
+            if added == True and first_time == False:
                 cart.ft_total += new_product.real_price
             
+            cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
             db.session.commit()
             return {}, 200
         except Exception as e:
@@ -104,7 +105,9 @@ class CartResources(Resource):
             # Si no hay productos, borramos
             if cart.order_details.count() == 0:
                 db.session.delete(cart)
-            
+            else:
+                cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+
             db.session.commit()
             return {}, 200
         except Exception as e:
@@ -136,6 +139,8 @@ class CartResources(Resource):
             # Si no hay productos, borramos
             if cart.order_details.count() == 0:
                 db.session.delete(cart)
+            else:
+                cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
             
             db.session.commit()
             return {}, 200

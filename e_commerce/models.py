@@ -92,8 +92,8 @@ class ProductModel(db.Model, BaseSerializer):
 
     @property
     def real_price(self):
-        real_price = self.ft_price - (self.ft_price * (self.ft_discount / 100.0))
-        return float(f"{real_price:.3g}")
+        real_price = self.ft_price - (self.ft_price * (self.ft_discount / 100))
+        return float("{:.2f}".format(real_price))
 
     @classmethod
     def find_all_products(cls):
@@ -135,7 +135,7 @@ class OrderModel(db.Model, BaseSerializer):
 
     @property
     def total_formatted(self):
-        return float(f"{self.ft_total:.3g}")
+        return float("{:.2f}".format(self.ft_total))
 
     @classmethod
     def find_by_id(cls, id):
@@ -175,11 +175,11 @@ class OrderModel(db.Model, BaseSerializer):
             if add:
                 print("------------->Incrementamos")
                 new_amount = od.nu_amount + 1
-                new_price = self.ft_total + product.real_price
+                new_price = self.total_formatted + product.real_price
             else:
                 print("------------->Decrementamos")
                 new_amount = od.nu_amount - 1
-                new_price = self.ft_total - product.real_price
+                new_price = self.total_formatted - product.real_price
             
             # Si no hay cantidad, eliminamos producto
             if new_amount == 0:
