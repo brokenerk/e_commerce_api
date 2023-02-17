@@ -12,7 +12,7 @@ class UserModel(db.Model, BaseSerializer):
     tx_password = db.Column(db.String)
     person = db.relationship("PersonModel", backref="users", lazy=True)
     access = db.relationship("AccessModel", backref="users", lazy=True)
-    orders = db.relationship("OrderModel", backref="users", lazy=True)
+    orders = db.relationship("OrderModel", backref="users", lazy='dynamic')
 
     @classmethod
     def find_by_id(cls, id):
@@ -126,12 +126,12 @@ class OrderModel(db.Model, BaseSerializer):
 
     fields = ['id_order', 'fh_date', 'st_purchased', 'ft_total', 'id_user', 'total_formatted']
 
-    id_order= db.Column('id_order', db.Integer, primary_key=True)
+    id_order= db.Column('id_order', db.Integer, primary_key=True, autoincrement=True)
     fh_date = db.Column(db.DateTime)
     st_purchased = db.Column(db.Boolean)
     ft_total = db.Column(db.Float)
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
-    order_details = db.relationship("OrderDetailModel", backref="order_c", lazy=True)
+    order_details = db.relationship("OrderDetailModel", backref="order_c", lazy='dynamic')
 
     @property
     def total_formatted(self):

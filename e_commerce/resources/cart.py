@@ -55,7 +55,8 @@ class CartResources(Resource):
                 cart = OrderModel(
                     fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"),
                     ft_total = new_product.real_price,
-                    id_user = id_user
+                    id_user = id_user,
+                    st_purchased = False
                 )
                 db.session.add(cart)
                 first_time = True
@@ -101,7 +102,7 @@ class CartResources(Resource):
             cart.ft_total = new_price
 
             # Si no hay productos, borramos
-            if cart.order_details == None:
+            if cart.order_details.count() == 0:
                 db.session.delete(cart)
             
             db.session.commit()
@@ -133,7 +134,7 @@ class CartResources(Resource):
             cart.ft_total -= product.real_price
 
             # Si no hay productos, borramos
-            if cart.order_details == None:
+            if cart.order_details.count() == 0:
                 db.session.delete(cart)
             
             db.session.commit()
