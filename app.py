@@ -3,6 +3,7 @@ from e_commerce.settings.exts import db, cors, api, jwt
 from e_commerce.settings.utils import ApiException
 from e_commerce.resources.products import api_bp as api_products
 from e_commerce.resources.cart import api_bp as api_cart
+from e_commerce.resources.orders import api_bp as api_orders
 from login import api_bp as api_login
 
 
@@ -22,6 +23,7 @@ def register_blueprints(app):
     app.register_blueprint(api_login)
     app.register_blueprint(api_products)
     app.register_blueprint(api_cart)
+    app.register_blueprint(api_orders)
 
 
 
