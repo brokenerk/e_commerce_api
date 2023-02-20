@@ -7,7 +7,12 @@ class UserModel(db.Model, BaseSerializer):
 
     fields = ['id_user', 'tx_login', 'tx_password']
 
-    id_user = db.Column('id_user', db.Integer, primary_key=True, autoincrement=True)
+    id_user = db.Column('id_user',
+                        db.Integer,
+                        db.ForeignKey("person.id_person"),
+                        db.ForeignKey("access.id_access"),
+                        primary_key=True, 
+                        autoincrement=True)
     tx_login = db.Column(db.String)
     tx_password = db.Column(db.String)
     person = db.relationship("PersonModel", backref="users", lazy=True)
@@ -21,19 +26,6 @@ class UserModel(db.Model, BaseSerializer):
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter(cls.tx_login == username).first()
-
-    def add_user(self):
-        try:
-            access = AccessModel(
-                id_access = self.id_user,
-                nu_attempt = 0
-            )
-            db.session.add(self)
-            db.session.add(access)
-        except Exception as e:
-            db.session.rollback()
-            print(str(e))
-            print("Error al registrar nuevo usuario")
 
     def find_cart(self):
         for order in self.orders:
@@ -52,9 +44,9 @@ class PersonModel(db.Model, BaseSerializer):
     __tablename__ = "person"
     __bind_key__ = "e_commerce"
 
-    fields = ['id_person', 'tx_first_name', 'tx_last_name_a', 'tx_last_name_b', 'tx_street' 'tx_city', 'tx_state','tx_zipcode','tx_telephone']
+    fields = ['id_person', 'tx_first_name', 'tx_last_name_a', 'tx_last_name_b', 'tx_street', 'tx_city', 'tx_state','tx_zipcode','tx_telephone']
 
-    id_person = db.Column('id_person', db.Integer, db.ForeignKey("users.id_user"), primary_key=True, autoincrement=True)
+    id_person = db.Column('id_person', db.Integer, primary_key=True, autoincrement=True)
     tx_first_name = db.Column(db.String)
     tx_last_name_a = db.Column(db.String)
     tx_last_name_b = db.Column(db.String)
@@ -64,6 +56,9 @@ class PersonModel(db.Model, BaseSerializer):
     tx_zipcode = db.Column(db.String)
     tx_telephone = db.Column(db.String)
 
+    def __init__(self, **kwargs):
+        super(PersonModel, self).__init__(**kwargs)
+
 
 class AccessModel(db.Model, BaseSerializer):
     __tablename__ = "access"
@@ -71,7 +66,7 @@ class AccessModel(db.Model, BaseSerializer):
 
     fields = ['id_access', 'nu_attempt', 'fh_failed', 'fh_lock']
 
-    id_access = db.Column('id_access', db.Integer, db.ForeignKey("users.id_user"), primary_key=True, autoincrement=True)
+    id_access = db.Column('id_access', db.Integer, primary_key=True, autoincrement=True)
     nu_attempt = db.Column(db.Integer)
     fh_failed = db.Column(db.DateTime)
     fh_lock = db.Column(db.DateTime)

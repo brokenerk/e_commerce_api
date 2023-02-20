@@ -4,6 +4,7 @@ from e_commerce.settings.utils import ApiException
 from e_commerce.resources.products import api_bp as api_products
 from e_commerce.resources.cart import api_bp as api_cart
 from e_commerce.resources.orders import api_bp as api_orders
+from e_commerce.resources.users import api_bp as api_users
 from login import api_bp as api_login
 
 
@@ -24,6 +25,7 @@ def register_blueprints(app):
     app.register_blueprint(api_products)
     app.register_blueprint(api_cart)
     app.register_blueprint(api_orders)
+    app.register_blueprint(api_users)
 
 
 
