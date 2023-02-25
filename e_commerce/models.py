@@ -204,6 +204,6 @@ class OrderModel(db.Model, BaseSerializer):
     def update_stock(self):
         for od in self.order_details:
             product = od.product
-            product.nu_stock -= od.nu_amount
+            product.nu_stock = product.nu_stock - od.nu_amount
         
     
