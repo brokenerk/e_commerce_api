@@ -15,7 +15,7 @@ class OrdersResources(Resource):
         get_orders = user.find_orders()
 
         orders = [order.serialize() for order in get_orders]
-        return {"orders": orders}, 200
+        return { "orders": orders }, 200 
     
 class ViewOrderResources(Resource):
     @jwt_required()

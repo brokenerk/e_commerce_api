@@ -11,6 +11,6 @@ class ProductsResources(Resource):
     def get(self):
         get_products = ProductModel.find_all_products()
         products = [p.serialize() for p in get_products]
-        return {"products": products}, 200
+        return { "products": products }, 200
 
 api.add_resource(ProductsResources, '/e_commerce/products')
