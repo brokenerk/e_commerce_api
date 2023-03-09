@@ -1,9 +1,9 @@
 ---------------------------------------------------------
---Create database shopping-cart:
+--Create database:
 --$ sudo su
 --$ su - postgres
---$ createdb shopping-cart
---$ psql shopping-cart
+--$ createdb e_commerce
+--$ psql e_commerce
 
 ---------------------------------------------------------
 --Tables:
@@ -61,6 +61,26 @@ create table wishlist (
 	id_product int4 not null,
 	primary key (id_product, id_user));
 
+create table questions (
+	id_question serial not null, 
+	question varchar(50) not null,
+	answer varchar(50) not null,
+	answer_date timestamp(0) not null,
+	id_product int4 not null,
+	id_user int4 not null,
+	primary key (id_question));
+
+create table reviews (
+	id_review serial not null, 
+	creation_date timestamp(0) not null,
+	country varchar(50) not null,
+	stars int4 not null,
+	description varchar(500) not null,
+	attachment varchar(50) not null,
+	id_product int4 not null,
+	id_user int4 not null,
+	primary key (id_review));
+
 alter table access add constraint FKaccess801659 foreign key (id_access) references users;
 alter table users add constraint FKusers311802 foreign key (id_user) references person;
 alter table order_detail add constraint FKorder_detail999795 foreign key (id_product) references product;
@@ -69,3 +89,9 @@ alter table order_c add constraint FKorder_c249289 foreign key (id_user) referen
 
 alter table wishlist add constraint FKwishlist567841 foreign key (id_product) references product;
 alter table wishlist add constraint FKwishlist118649 foreign key (id_user) references users;
+
+alter table questions add constraint FKquestions885533 foreign key (id_product) references product;
+alter table questions add constraint FKquestions846753 foreign key (id_user) references users;
+
+alter table reviews add constraint FKreviews183490 foreign key (id_product) references product;
+alter table reviews add constraint FKreviews467382 foreign key (id_user) references users;
