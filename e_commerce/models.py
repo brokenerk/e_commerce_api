@@ -1,5 +1,6 @@
 from e_commerce.settings.exts import db
 from e_commerce.settings.helpers import BaseSerializer
+from sqlalchemy import or_
 
 class UserModel(db.Model, BaseSerializer):
     __tablename__ = "users"
@@ -91,8 +92,11 @@ class ProductModel(db.Model, BaseSerializer):
         return float("{:.2f}".format(real_price))
 
     @classmethod
-    def find_all_products(cls):
-        return cls.query.all()
+    def find_all_products(cls, search):
+        return cls.query.filter(
+            or_(cls.tx_name.ilike("%" + search + "%"),
+            cls.tx_description.ilike("%" + search + "%"))
+        ).all()
     
     @classmethod
     def find_by_id(cls, id):

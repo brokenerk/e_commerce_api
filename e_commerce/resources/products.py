@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_restful import Resource, Api
 from e_commerce.models import ProductModel
 
@@ -9,7 +9,8 @@ api = Api(api_bp)
 class ProductsResources(Resource):
 
     def get(self):
-        get_products = ProductModel.find_all_products()
+        search = request.args.get('search')
+        get_products = ProductModel.find_all_products(search)
         products = [p.serialize() for p in get_products]
         return { "products": products }, 200
 
