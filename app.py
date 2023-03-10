@@ -6,6 +6,7 @@ from e_commerce.resources.cart import api_bp as api_cart
 from e_commerce.resources.orders import api_bp as api_orders
 from e_commerce.resources.users import api_bp as api_users
 from e_commerce.resources.buy import api_bp as api_buy
+from e_commerce.resources.wishlist import api_bp as api_wishlist
 from login import api_bp as api_login
 
 
@@ -28,6 +29,7 @@ def register_blueprints(app):
     app.register_blueprint(api_orders)
     app.register_blueprint(api_users)
     app.register_blueprint(api_buy)
+    app.register_blueprint(api_wishlist)
 
 
 

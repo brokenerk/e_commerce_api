@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restful import Resource, Api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful.reqparse import RequestParser
-from e_commerce.models import UserModel
+from e_commerce.models import UserModel, WishlistModel
 import e_commerce.paypal_api as paypal_api
 from e_commerce.settings.exts import db
 from datetime import datetime
@@ -60,6 +60,14 @@ class BuyResources(Resource):
             cart.st_purchased = True
             cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
             cart.update_stock()
+
+            # Remove purchased products from wishlist
+            wishlist_id_products = [w.id_product for w in user.wishlist]
+            for od in cart.order_details:
+                if od.id_product in wishlist_id_products:
+                    wishlist = WishlistModel.find_by_ids(id_user, od.id_product)
+                    db.session.delete(wishlist)
+                    db.session.commit()
 
             db.session.commit()
             return {}, 200

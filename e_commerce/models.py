@@ -19,6 +19,7 @@ class UserModel(db.Model, BaseSerializer):
     person = db.relationship("PersonModel", backref="users", lazy=True)
     access = db.relationship("AccessModel", backref="users", lazy=True)
     orders = db.relationship("OrderModel", backref="users", lazy='dynamic')
+    wishlist = db.relationship("WishlistModel", backref="users", lazy='dynamic')
 
     @classmethod
     def find_by_id(cls, id):
@@ -211,3 +212,18 @@ class OrderModel(db.Model, BaseSerializer):
             product.nu_stock = product.nu_stock - od.nu_amount
         
     
+class WishlistModel(db.Model, BaseSerializer):
+    __tablename__ = "wishlist"
+    __bind_key__ = "e_commerce"
+
+    fields = ['id_user', 'id_product']
+
+    id_user = db.Column('id_user', db.Integer, db.ForeignKey("users.id_user"), primary_key=True)
+    id_product = db.Column('id_product', db.Integer, db.ForeignKey("product.id_product"), primary_key=True)
+    product = db.relationship("ProductModel", backref="wishlist", lazy=True)
+
+    @classmethod
+    def find_by_ids(cls, id_user, id_product):
+        return cls.query.filter(cls.id_user == id_user, cls.id_product == id_product).first()
+
+
