@@ -16,8 +16,11 @@ class WishlistResources(Resource):
         print("wishlist")
         id_user = get_jwt_identity()
         user = UserModel.find_by_id(id_user)
-        cart_order_details = user.find_cart().order_details
-        id_products_in_cart = [od.id_product for od in cart_order_details]
+        get_cart = user.find_cart()
+        id_products_in_cart = []
+        if get_cart:
+            cart_order_details = get_cart.order_details
+            id_products_in_cart = [od.id_product for od in cart_order_details]
         wishlist = []
         for w in user.wishlist:
             wishlist_product = w.product.serialize()
