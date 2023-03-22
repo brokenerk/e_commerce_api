@@ -18,8 +18,8 @@ class UserModel(db.Model, BaseSerializer):
     tx_password = db.Column(db.String)
     person = db.relationship("PersonModel", backref="users", lazy=True)
     access = db.relationship("AccessModel", backref="users", lazy=True)
-    orders = db.relationship("OrderModel", backref="users", lazy='dynamic')
-    wishlist = db.relationship("WishlistModel", backref="users", lazy='dynamic')
+    orders = db.relationship("OrderModel", backref="users", lazy='dynamic', order_by="desc(OrderModel.fh_date)")
+    wishlist = db.relationship("WishlistModel", backref="users", lazy='dynamic', order_by="WishlistModel.id_product")
 
     @classmethod
     def find_by_id(cls, id):
@@ -86,6 +86,7 @@ class ProductModel(db.Model, BaseSerializer):
     ft_price = db.Column(db.Float)
     nu_stock = db.Column(db.Integer)
     ft_discount = db.Column(db.Float)
+    questions = db.relationship("QuestionModel", backref="product", lazy='dynamic', order_by="desc(QuestionModel.id_question)")
 
     @property
     def real_price(self):
@@ -97,7 +98,7 @@ class ProductModel(db.Model, BaseSerializer):
         return cls.query.filter(
             or_(cls.tx_name.ilike("%" + search + "%"),
             cls.tx_description.ilike("%" + search + "%"))
-        ).all()
+        ).order_by(cls.id_product).all()
     
     @classmethod
     def find_by_id(cls, id):
@@ -131,7 +132,7 @@ class OrderModel(db.Model, BaseSerializer):
     st_purchased = db.Column(db.Boolean)
     ft_total = db.Column(db.Float)
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
-    order_details = db.relationship("OrderDetailModel", backref="order_c", lazy='dynamic')
+    order_details = db.relationship("OrderDetailModel", backref="order_c", lazy='dynamic', order_by="OrderDetailModel.id_product")
 
     @property
     def total_formatted(self):
@@ -227,3 +228,20 @@ class WishlistModel(db.Model, BaseSerializer):
         return cls.query.filter(cls.id_user == id_user, cls.id_product == id_product).first()
 
 
+class QuestionModel(db.Model, BaseSerializer):
+    __tablename__ = "questions"
+    __bind_key__ = "e_commerce"
+
+    fields = ['id_question', 'question', 'answer', 'answer_date', 'id_product', 'id_user']
+
+    id_question = db.Column('id_question', db.Integer, primary_key=True)
+    question = db.Column(db.String)
+    answer = db.Column(db.String)
+    answer_date = db.Column(db.DateTime)
+    id_product = db.Column(db.Integer, db.ForeignKey("product.id_product"))
+    id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
+    user = db.relationship("UserModel", backref="questions", lazy=True)
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter(cls.id_question == id).first()

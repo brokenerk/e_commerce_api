@@ -64,10 +64,10 @@ create table wishlist (
 create table questions (
 	id_question serial not null, 
 	question varchar(50) not null,
-	answer varchar(50) not null,
-	answer_date timestamp(0) not null,
+	answer varchar(50),
+	answer_date timestamp(0),
 	id_product int4 not null,
-	id_user int4 not null,
+	id_user int4,
 	primary key (id_question));
 
 create table reviews (
