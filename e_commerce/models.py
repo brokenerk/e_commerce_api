@@ -78,7 +78,7 @@ class ProductModel(db.Model, BaseSerializer):
     __tablename__ = "product"
     __bind_key__ = "e_commerce"
 
-    fields = ['id_product', 'tx_name', 'tx_description', 'ft_price', 'nu_stock', 'ft_discount', 'real_price']
+    fields = ['id_product', 'tx_name', 'tx_description', 'ft_price', 'nu_stock', 'ft_discount', 'real_price', 'stars']
 
     id_product = db.Column('id_product', db.Integer, primary_key=True, autoincrement=True)
     tx_name = db.Column(db.String)
@@ -86,12 +86,20 @@ class ProductModel(db.Model, BaseSerializer):
     ft_price = db.Column(db.Float)
     nu_stock = db.Column(db.Integer)
     ft_discount = db.Column(db.Float)
+    reviews = db.relationship("ReviewModel", backref="product", lazy='dynamic', order_by="desc(ReviewModel.stars)")
     questions = db.relationship("QuestionModel", backref="product", lazy='dynamic', order_by="desc(QuestionModel.id_question)")
 
     @property
     def real_price(self):
         real_price = self.ft_price - (self.ft_price * (self.ft_discount / 100))
         return float("{:.2f}".format(real_price))
+
+    @property
+    def stars(self):
+        stars = 0
+        for r in self.reviews:
+            stars += r.stars
+        return int(stars / self.reviews.count() if stars != 0 else stars)
 
     @classmethod
     def find_all_products(cls, search):
@@ -228,11 +236,33 @@ class WishlistModel(db.Model, BaseSerializer):
         return cls.query.filter(cls.id_user == id_user, cls.id_product == id_product).first()
 
 
+class ReviewModel(db.Model, BaseSerializer):
+    __tablename__ = "reviews"
+    __bind_key__ = "e_commerce"
+
+    fields = ['id_review', 'creation_date', 'country', 'stars', 'description', 'attachment', 'username']
+
+    id_review = db.Column('id_review', db.Integer, primary_key=True)
+    creation_date = db.Column(db.DateTime)
+    country = db.Column(db.String)
+    stars = db.Column(db.Integer)
+    description = db.Column(db.String)
+    attachment = db.Column(db.String)
+    id_product = db.Column(db.Integer, db.ForeignKey("product.id_product"))
+    id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
+    user = db.relationship("UserModel", backref="reviews", lazy=True)
+
+    @property
+    def username(self):
+        splitted_login = self.user.tx_login.split('@')
+        return splitted_login[0]
+
+
 class QuestionModel(db.Model, BaseSerializer):
     __tablename__ = "questions"
     __bind_key__ = "e_commerce"
 
-    fields = ['id_question', 'question', 'answer', 'answer_date', 'id_product', 'id_user']
+    fields = ['id_question', 'question', 'answer', 'answer_date', 'username']
 
     id_question = db.Column('id_question', db.Integer, primary_key=True)
     question = db.Column(db.String)
@@ -241,6 +271,11 @@ class QuestionModel(db.Model, BaseSerializer):
     id_product = db.Column(db.Integer, db.ForeignKey("product.id_product"))
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
     user = db.relationship("UserModel", backref="questions", lazy=True)
+
+    @property
+    def username(self):
+        splitted_login = self.user.tx_login.split('@')
+        return splitted_login[0]
 
     @classmethod
     def find_by_id(cls, id):

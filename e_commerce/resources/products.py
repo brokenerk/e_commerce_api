@@ -24,17 +24,15 @@ class ViewProductResources(Resource):
     def get(self, id):
         get_product = ProductModel.find_by_id(id)
         product = get_product.serialize()
-        reviews = [r.serialize() for r in get_product.reviews]
-        questions = []
-        for q in get_product.questions:
-            question = q.serialize()
-            question.pop("id_product")
-            if q.id_user:
-                question["username"] = UserModel.find_by_id(q.id_user).tx_login.split("@")[0]
-            question.pop("id_user")
-            questions.append(question)
+        reviews = []
+        stars = [0, 0, 0, 0, 0]
+        for r in get_product.reviews:
+            stars[r.stars - 1] += 1
+            reviews.append(r.serialize())
+        questions = [q.serialize() for q in get_product.questions]
         product["reviews"] = reviews
         product["questions"] = questions
+        product["stars_array"] = stars
         return { "product": product }, 200
     
     args_question = RequestParser()
