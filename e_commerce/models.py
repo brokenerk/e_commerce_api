@@ -99,7 +99,7 @@ class ProductModel(db.Model, BaseSerializer):
         stars = 0
         for r in self.reviews:
             stars += r.stars
-        return int(stars / self.reviews.count() if stars != 0 else stars)
+        return float("{:.2f}".format(stars / self.reviews.count() if stars != 0 else stars))
 
     @classmethod
     def find_all_products(cls, search):
@@ -112,6 +112,11 @@ class ProductModel(db.Model, BaseSerializer):
     def find_by_id(cls, id):
         return cls.query.filter(cls.id_product == id).first()
     
+    def hasUserReview(self, id_user):
+        for review in self.reviews:
+            if (int(review.id_user) == int(id_user)):
+                return True
+        return False
 
 class OrderDetailModel(db.Model, BaseSerializer):
     __tablename__ = "order_detail"

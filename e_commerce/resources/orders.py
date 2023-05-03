@@ -20,6 +20,7 @@ class OrdersResources(Resource):
 class ViewOrderResources(Resource):
     @jwt_required()
     def get(self, id_order):
+        id_user = get_jwt_identity()
         order = {}
         get_order = OrderModel.find_by_id(id_order)
         
@@ -30,6 +31,7 @@ class ViewOrderResources(Resource):
             for order_detail in get_order_details:
                 od = order_detail.serialize()
                 od["product"] = order_detail.product.serialize()
+                od["product"]["hasUserReview"] = order_detail.product.hasUserReview(id_user)
                 order_details.append(od)
 
             order["order"] = get_order.serialize()

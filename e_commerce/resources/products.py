@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask_restful import Resource, Api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful.reqparse import RequestParser
-from e_commerce.models import ProductModel, UserModel, QuestionModel
+from e_commerce.models import ProductModel, QuestionModel, ReviewModel
 from e_commerce.settings.exts import db
 from datetime import datetime
 
@@ -76,7 +76,40 @@ class ViewProductResources(Resource):
             print(str(e))
             return { "message": str(e) }, 500
 
+
+class ReviewResources(Resource):
+
+    args_review = RequestParser()
+    args_review.add_argument("country", type=str, required=True, help="country")
+    args_review.add_argument("stars", type=int, required=True, help="score in stars")
+    args_review.add_argument("description", type=str, required=True, help="review comment")
+    args_review.add_argument("id_product", type=int, required=True, help="id product")
+    @jwt_required()
+    def post(self):
+        try:
+            id_user = get_jwt_identity()
+            data = self.args_review.parse_args()
+
+            new_review = ReviewModel(
+                creation_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"),
+                country = data["country"],
+                stars = data["stars"],
+                description = data["description"],
+                attachment = None,
+                id_product = data["id_product"],
+                id_user = id_user
+            )
+            db.session.add(new_review)
+            db.session.commit()
+
+            return {}, 200
+        except Exception as e:
+            db.session.rollback()
+            print(str(e))
+            return { "message": str(e) }, 500
+
     
 
 api.add_resource(ProductsResources, '/e_commerce/products')
 api.add_resource(ViewProductResources, '/e_commerce/products/<int:id>')
+api.add_resource(ReviewResources, '/e_commerce/reviews')
