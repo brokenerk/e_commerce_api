@@ -1,6 +1,7 @@
 from e_commerce.settings.exts import db
 from e_commerce.settings.helpers import BaseSerializer
 from sqlalchemy import or_
+from sqlalchemy_filters import apply_pagination
 
 class UserModel(db.Model, BaseSerializer):
     __tablename__ = "users"
@@ -102,11 +103,28 @@ class ProductModel(db.Model, BaseSerializer):
         return float("{:.2f}".format(stars / self.reviews.count() if stars != 0 else stars))
 
     @classmethod
-    def find_all_products(cls, search):
-        return cls.query.filter(
+    def find_all_products(cls, search, page_number=None, page_size=None):
+        search = search if search else ""
+        page_number = int(page_number) if page_number else 1
+        page_size = int(page_size) if page_size else 9
+
+        products = cls.query.filter(
             or_(cls.tx_name.ilike("%" + search + "%"),
             cls.tx_description.ilike("%" + search + "%"))
-        ).order_by(cls.id_product).all()
+        ).order_by(cls.id_product)
+
+        products, pagination = apply_pagination(
+            products, page_number=page_number, page_size=page_size
+        )
+        page_number, page_size, num_pages, total_results = pagination
+
+        page_result = {
+            "page_size": page_size,
+            "page_number": page_number,
+            "num_pages": num_pages,
+            "total_results": total_results
+        }
+        return products.all(), page_result
     
     @classmethod
     def find_by_id(cls, id):

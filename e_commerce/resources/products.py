@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from flask_restful import Resource, Api
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful.reqparse import RequestParser
@@ -14,9 +14,12 @@ class ProductsResources(Resource):
 
     def get(self):
         search = request.args.get('search')
-        get_products = ProductModel.find_all_products(search)
+        page_number = request.args.get('page_number')
+        page_size= request.args.get('page_size')
+        get_products, page_result = ProductModel.find_all_products(search, page_number, page_size)
         products = [p.serialize() for p in get_products]
-        return { "products": products }, 200
+        page_result["products"] = products
+        return jsonify(page_result)
     
 
 class ViewProductResources(Resource):
