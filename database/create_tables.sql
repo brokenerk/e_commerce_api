@@ -7,91 +7,159 @@
 
 ---------------------------------------------------------
 --Tables:
-create table users (
-	id_user int4 not null, 
-	tx_login varchar(30) not null unique, 
-	tx_password varchar(10) not null, 
-	primary key (id_user));
+-- public.person definition
 
-create table person (
-	id_person serial not null, 
-	tx_first_name varchar(30) not null, 
-	tx_last_name_a varchar(30) not null, 
-	tx_last_name_b varchar(30) not null, 
-	tx_street varchar(100) not null, 
-	tx_city varchar(100) not null, 
-	tx_state varchar(100) not null,
-	tx_zipcode varchar(5) not null,
-	tx_telephone varchar(14) not null, 
-	primary key (id_person));
+-- Drop table
 
-create table access (
-	id_access int4 not null, 
-	nu_attempt int4 not null, 
-	fh_failed timestamp(0), 
-	fh_lock timestamp(0), 
-	primary key (id_access));
+-- DROP TABLE person;
 
-create table product (
-	id_product serial not null, 
-	tx_name varchar(50) not null, 
-	tx_description varchar(500) not null, 
-	ft_price float not null,
-	nu_stock int4 not null,
-	ft_discount float,
-	primary key (id_product));
+CREATE TABLE person (
+	id_person serial4 NOT NULL,
+	tx_first_name varchar(30) NOT NULL,
+	tx_last_name_a varchar(30) NOT NULL,
+	tx_last_name_b varchar(30) NOT NULL,
+	tx_street varchar(100) NOT NULL,
+	tx_city varchar(100) NOT NULL,
+	tx_state varchar(100) NOT NULL,
+	tx_zipcode varchar(5) NOT NULL,
+	tx_telephone varchar(14) NOT NULL,
+	CONSTRAINT person_pkey PRIMARY KEY (id_person)
+);
 
-create table order_detail (
-	id_product int4 not null, 
-	id_order int4 not null,
-	nu_amount int4 not null, 
-	primary key (id_product, id_order));
 
-create table order_c (
-	id_order serial not null,
-	fh_date timestamp(0) not null,
-	st_purchased bool not null,
-	ft_total float not null,
-	payment varchar(-1),
-	id_user int4 not null,
-	primary key (id_order));
+-- public.product definition
 
-create table wishlist (
-	id_user int4 not null,
-	id_product int4 not null,
-	primary key (id_product, id_user));
+-- Drop table
 
-create table questions (
-	id_question serial not null, 
-	question varchar(50) not null,
-	answer varchar(50),
-	answer_date timestamp(0),
-	id_product int4 not null,
-	id_user int4,
-	primary key (id_question));
+-- DROP TABLE product;
 
-create table reviews (
-	id_review serial not null, 
-	creation_date timestamp(0) not null,
-	country varchar(50) not null,
-	stars int4 not null,
-	description varchar(500) not null,
-	attachment varchar(50) not null,
-	id_product int4 not null,
-	id_user int4 not null,
-	primary key (id_review));
+CREATE TABLE product (
+	id_product serial4 NOT NULL,
+	tx_name varchar(50) NOT NULL,
+	tx_description varchar(500) NOT NULL,
+	ft_price float8 NOT NULL,
+	nu_stock int4 NOT NULL,
+	ft_discount float8 NULL,
+	CONSTRAINT product_pkey PRIMARY KEY (id_product)
+);
 
-alter table access add constraint FKaccess801659 foreign key (id_access) references users;
-alter table users add constraint FKusers311802 foreign key (id_user) references person;
-alter table order_detail add constraint FKorder_detail999795 foreign key (id_product) references product;
-alter table order_detail add constraint FKorder_detail713322 foreign key (id_order) references order_c;
-alter table order_c add constraint FKorder_c249289 foreign key (id_user) references users;
 
-alter table wishlist add constraint FKwishlist567841 foreign key (id_product) references product;
-alter table wishlist add constraint FKwishlist118649 foreign key (id_user) references users;
+-- public.users definition
 
-alter table questions add constraint FKquestions885533 foreign key (id_product) references product;
-alter table questions add constraint FKquestions846753 foreign key (id_user) references users;
+-- Drop table
 
-alter table reviews add constraint FKreviews183490 foreign key (id_product) references product;
-alter table reviews add constraint FKreviews467382 foreign key (id_user) references users;
+-- DROP TABLE users;
+
+CREATE TABLE users (
+	id_user int4 NOT NULL,
+	tx_login varchar(30) NOT NULL,
+	tx_password varchar(10) NOT NULL,
+	CONSTRAINT users_pkey PRIMARY KEY (id_user),
+	CONSTRAINT users_tx_login_key UNIQUE (tx_login),
+	CONSTRAINT fkusers311802 FOREIGN KEY (id_user) REFERENCES person(id_person)
+);
+
+
+-- public.wishlist definition
+
+-- Drop table
+
+-- DROP TABLE wishlist;
+
+CREATE TABLE wishlist (
+	id_user int4 NOT NULL,
+	id_product int4 NOT NULL,
+	CONSTRAINT wishlist_pkey PRIMARY KEY (id_product, id_user),
+	CONSTRAINT fkwishlist118649 FOREIGN KEY (id_user) REFERENCES users(id_user),
+	CONSTRAINT fkwishlist567841 FOREIGN KEY (id_product) REFERENCES product(id_product)
+);
+
+
+-- public."access" definition
+
+-- Drop table
+
+-- DROP TABLE "access";
+
+CREATE TABLE "access" (
+	id_access int4 NOT NULL,
+	nu_attempt int4 NOT NULL,
+	fh_failed timestamp(0) NULL,
+	fh_lock timestamp(0) NULL,
+	CONSTRAINT access_pkey PRIMARY KEY (id_access),
+	CONSTRAINT fkaccess801659 FOREIGN KEY (id_access) REFERENCES users(id_user)
+);
+
+
+-- public.order_c definition
+
+-- Drop table
+
+-- DROP TABLE order_c;
+
+CREATE TABLE order_c (
+	id_order serial4 NOT NULL,
+	fh_date timestamp(0) NOT NULL,
+	st_purchased bool NOT NULL,
+	ft_total float8 NOT NULL,
+	id_user int4 NOT NULL,
+	payment varchar NULL,
+	CONSTRAINT order_c_pkey PRIMARY KEY (id_order),
+	CONSTRAINT fkorder_c249289 FOREIGN KEY (id_user) REFERENCES users(id_user)
+);
+
+
+-- public.order_detail definition
+
+-- Drop table
+
+-- DROP TABLE order_detail;
+
+CREATE TABLE order_detail (
+	id_product int4 NOT NULL,
+	id_order int4 NOT NULL,
+	nu_amount int4 NOT NULL,
+	CONSTRAINT order_detail_pkey PRIMARY KEY (id_product, id_order),
+	CONSTRAINT fkorder_detail713322 FOREIGN KEY (id_order) REFERENCES order_c(id_order),
+	CONSTRAINT fkorder_detail999795 FOREIGN KEY (id_product) REFERENCES product(id_product)
+);
+
+
+-- public.questions definition
+
+-- Drop table
+
+-- DROP TABLE questions;
+
+CREATE TABLE questions (
+	id_question serial4 NOT NULL,
+	question varchar(50) NOT NULL,
+	answer varchar(50) NULL,
+	answer_date timestamp(0) NULL,
+	id_product int4 NOT NULL,
+	id_user int4 NULL,
+	CONSTRAINT questions_pkey PRIMARY KEY (id_question),
+	CONSTRAINT fkquestions846753 FOREIGN KEY (id_user) REFERENCES users(id_user),
+	CONSTRAINT fkquestions885533 FOREIGN KEY (id_product) REFERENCES product(id_product)
+);
+
+
+-- public.reviews definition
+
+-- Drop table
+
+-- DROP TABLE reviews;
+
+CREATE TABLE reviews (
+	id_review serial4 NOT NULL,
+	creation_date timestamp(0) NOT NULL,
+	country varchar(50) NOT NULL,
+	stars int4 NOT NULL,
+	description varchar(500) NOT NULL,
+	attachment varchar(50) NULL,
+	id_product int4 NOT NULL,
+	id_user int4 NOT NULL,
+	CONSTRAINT reviews_pkey PRIMARY KEY (id_review),
+	CONSTRAINT fkreviews183490 FOREIGN KEY (id_product) REFERENCES product(id_product),
+	CONSTRAINT fkreviews467382 FOREIGN KEY (id_user) REFERENCES users(id_user)
+);
