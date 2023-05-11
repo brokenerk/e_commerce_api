@@ -2,6 +2,25 @@ from e_commerce.settings.exts import db
 from e_commerce.settings.helpers import BaseSerializer
 from sqlalchemy import or_
 from sqlalchemy_filters import apply_pagination
+from sqlalchemy.ext import mutable
+import json
+
+class JsonEncodedDict(db.TypeDecorator):
+    """Enables JSON storage by encoding and decoding on the fly."""
+
+    impl = db.Text
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return "{}"
+        else:
+            return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return {}
+        else:
+            return json.loads(value)
 
 class UserModel(db.Model, BaseSerializer):
     __tablename__ = "users"
@@ -156,12 +175,13 @@ class OrderModel(db.Model, BaseSerializer):
     __tablename__ = "order_c"
     __bind_key__ = "e_commerce"
 
-    fields = ['id_order', 'fh_date', 'st_purchased', 'ft_total', 'id_user', 'total_formatted']
+    fields = ['id_order', 'fh_date', 'st_purchased', 'ft_total', 'payment', 'id_user', 'total_formatted']
 
     id_order= db.Column('id_order', db.Integer, primary_key=True, autoincrement=True)
     fh_date = db.Column(db.DateTime)
     st_purchased = db.Column(db.Boolean)
     ft_total = db.Column(db.Float)
+    payment = db.Column(JsonEncodedDict)
     id_user = db.Column(db.Integer, db.ForeignKey("users.id_user"))
     order_details = db.relationship("OrderDetailModel", backref="order_c", lazy='dynamic', order_by="OrderDetailModel.id_product")
 
@@ -303,3 +323,6 @@ class QuestionModel(db.Model, BaseSerializer):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter(cls.id_question == id).first()
+    
+
+mutable.MutableDict.associate_with(JsonEncodedDict)

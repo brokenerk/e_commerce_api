@@ -44,8 +44,17 @@ class BuyResources(Resource):
             paypal_order_id = data["paypal_order_id"]
 
             captureData = paypal_api.capturePayment(paypal_order_id)
-            return captureData, 200
+            
+            # Save paypal payment info
+            id_user = get_jwt_identity()
+            user = UserModel.find_by_id(id_user)
+            cart = user.find_cart()
+            cart.payment = captureData
+
+            db.session.commit()
+            return {}, 200
         except Exception as e:
+            db.session.rollback()
             print(str(e))
             return { "message": str(e) }, 500
 
