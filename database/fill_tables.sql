@@ -7,10 +7,10 @@ INSERT INTO "access" (id_access,nu_attempt,fh_failed,fh_lock) VALUES
 	 (8,0,NULL,NULL);
 INSERT INTO order_c (id_order,fh_date,st_purchased,ft_total,id_user,payment) VALUES
 	 (1,'2001-01-01 00:00:00',true,6811.73,1,NULL),
+	 (18,'2023-02-25 04:36:45',true,2972.71,1,NULL),
 	 (2,'2001-01-01 00:00:00',true,6811.73,1,NULL),
 	 (3,'2001-01-01 00:00:00',true,6811.73,1,NULL),
-	 (18,'2023-02-25 04:36:45',true,2972.71,1,NULL),
-	 (26,'2023-03-22 22:30:37',false,487.9,1,NULL);
+	 (26,'2023-05-11 19:27:50',true,487.9,1,'{"id": "0E7303707R2749722", "status": "COMPLETED", "payment_source": {"paypal": {"email_address": "sb-z059s25121286@personal.example.com", "account_id": "U5PBR8ZW7MQDN", "name": {"given_name": "Paypal", "surname": "Testing"}, "address": {"country_code": "MX"}}}, "purchase_units": [{"reference_id": "3_0", "shipping": {"name": {"full_name": "Paypal Testing"}, "address": {"address_line_1": "Calle Juarez 1", "address_line_2": "Col. Cuauhtemoc", "admin_area_2": "Miguel Hidalgo", "admin_area_1": "Ciudad de Mexico", "postal_code": "11580", "country_code": "MX"}}, "payments": {"captures": [{"id": "56148456S1368212N", "status": "COMPLETED", "amount": {"currency_code": "MXN", "value": "487.90"}, "final_capture": true, "seller_protection": {"status": "ELIGIBLE", "dispute_categories": ["ITEM_NOT_RECEIVED", "UNAUTHORIZED_TRANSACTION"]}, "seller_receivable_breakdown": {"gross_amount": {"currency_code": "MXN", "value": "487.90"}, "paypal_fee": {"currency_code": "MXN", "value": "26.99"}, "net_amount": {"currency_code": "MXN", "value": "460.91"}}, "links": [{"href": "https://api.sandbox.paypal.com/v2/payments/captures/56148456S1368212N", "rel": "self", "method": "GET"}, {"href": "https://api.sandbox.paypal.com/v2/payments/captures/56148456S1368212N/refund", "rel": "refund", "method": "POST"}, {"href": "https://api.sandbox.paypal.com/v2/checkout/orders/0E7303707R2749722", "rel": "up", "method": "GET"}], "create_time": "2023-05-11T19:27:49Z", "update_time": "2023-05-11T19:27:49Z"}]}}], "payer": {"name": {"given_name": "Paypal", "surname": "Testing"}, "email_address": "sb-z059s25121286@personal.example.com", "payer_id": "U5PBR8ZW7MQDN", "address": {"country_code": "MX"}}, "links": [{"href": "https://api.sandbox.paypal.com/v2/checkout/orders/0E7303707R2749722", "rel": "self", "method": "GET"}]}');
 INSERT INTO order_detail (id_product,id_order,nu_amount) VALUES
 	 (1,1,1),
 	 (10,1,2),
@@ -39,8 +39,8 @@ INSERT INTO product (id_product,tx_name,tx_description,ft_price,nu_stock,ft_disc
 	 (10,'Marvel Guante Electrónico Avengers Infinity War','El Guante electrónico de Thanos, ¡que incluye luces y sonidos! ¡Presiona el botón central en el puño para iluminar la piedra central y activar el poderoso sonido! Este Guante del Infinito está inspirado en la película Avengers: Infinity War y está diseñado para adaptarse a la mayoría de los tamaños de mano.',226.82,5,50.3),
 	 (12,'Funko, Figura Coleccionable Thanos','Funko Pop Vinyl Thanos. 5 pulgadas de alto. Figura coleccionable cabeza de Globo. Avengers Infinity War, Multicolor.',249.0,5,0.0);
 INSERT INTO product (id_product,tx_name,tx_description,ft_price,nu_stock,ft_discount) VALUES
-	 (3,'Eco Dot Bocina con Alexa','Echo Dot es una bocina inteligente que se controla con la voz. Se conecta a través de Wi-Fi a Alexa, un servicio de voz basado en la nube. Alexa puede reproducir música, responder a preguntas, narrar las noticias, consultar el pronóstico del clima, configurar alarmas, controlar dispositivos de Casa Inteligente compatibles y mucho más.',699.0,2,30.2),
-	 (11,'Wicked Audio Endo Supraaural Audífonos','Los auriculares inalámbricos Bluetooth de Wicked Audio Endo están diseñados para ofrecer música rock para alimentar tu adrenalina y mantenerte en movimiento.',1682.28,4,10.3);
+	 (11,'Wicked Audio Endo Supraaural Audífonos','Los auriculares inalámbricos Bluetooth de Wicked Audio Endo están diseñados para ofrecer música rock para alimentar tu adrenalina y mantenerte en movimiento.',1682.28,4,10.3),
+	 (3,'Eco Dot Bocina con Alexa','Echo Dot es una bocina inteligente que se controla con la voz. Se conecta a través de Wi-Fi a Alexa, un servicio de voz basado en la nube. Alexa puede reproducir música, responder a preguntas, narrar las noticias, consultar el pronóstico del clima, configurar alarmas, controlar dispositivos de Casa Inteligente compatibles y mucho más.',699.0,1,30.2);
 INSERT INTO questions (id_question,question,answer,answer_date,id_product,id_user) VALUES
 	 (1,'Viene en espaniol??','Si, es producto mexicano','2023-03-13 00:00:00',3,1),
 	 (2,'Utiliza cargador o bateria?','Usa cargador, viene incluido.','2023-03-20 00:00:00',3,1),
@@ -61,5 +61,4 @@ INSERT INTO users (id_user,tx_login,tx_password) VALUES
 	 (1,'johndoe@gmail.com','prueba123');
 INSERT INTO wishlist (id_user,id_product) VALUES
 	 (1,2),
-	 (1,7),
-	 (1,3);
+	 (1,7);
