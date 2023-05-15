@@ -67,7 +67,7 @@ class BuyResources(Resource):
             cart = user.find_cart()
 
             cart.st_purchased = True
-            cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+            cart.fh_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             cart.update_stock()
 
             # Remove purchased products from wishlist

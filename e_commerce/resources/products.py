@@ -69,7 +69,7 @@ class ViewProductResources(Resource):
 
             question.id_user = id_user
             question.answer = data["answer"]
-            question.answer_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+            question.answer_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
             db.session.commit()
 
@@ -94,7 +94,7 @@ class ReviewResources(Resource):
             data = self.args_review.parse_args()
 
             new_review = ReviewModel(
-                creation_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"),
+                creation_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
                 country = data["country"],
                 stars = data["stars"],
                 description = data["description"],

@@ -53,7 +53,7 @@ class CartResources(Resource):
             # Si no hay un carrito activo, lo agregamos
             if cart == None:
                 cart = OrderModel(
-                    fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"),
+                    fh_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
                     ft_total = new_product.real_price,
                     id_user = id_user,
                     st_purchased = False
@@ -69,7 +69,7 @@ class CartResources(Resource):
             if added == True and first_time == False:
                 cart.ft_total += new_product.real_price
             
-            cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+            cart.fh_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             db.session.commit()
             return {}, 200
         except Exception as e:
@@ -106,7 +106,7 @@ class CartResources(Resource):
             if cart.order_details.count() == 0:
                 db.session.delete(cart)
             else:
-                cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+                cart.fh_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
             db.session.commit()
             return {}, 200
@@ -140,7 +140,7 @@ class CartResources(Resource):
             if cart.order_details.count() == 0:
                 db.session.delete(cart)
             else:
-                cart.fh_date = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")
+                cart.fh_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             
             db.session.commit()
             return {}, 200
