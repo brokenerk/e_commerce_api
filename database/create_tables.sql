@@ -1,17 +1,3 @@
----------------------------------------------------------
---Create database:
---$ sudo su
---$ su - postgres
---$ createdb e_commerce
---$ psql e_commerce
-
----------------------------------------------------------
---Tables:
--- public.person definition
-
--- Drop table
-
--- DROP TABLE person;
 
 CREATE TABLE person (
 	id_person serial4 NOT NULL,
@@ -26,13 +12,6 @@ CREATE TABLE person (
 	CONSTRAINT person_pkey PRIMARY KEY (id_person)
 );
 
-
--- public.product definition
-
--- Drop table
-
--- DROP TABLE product;
-
 CREATE TABLE product (
 	id_product serial4 NOT NULL,
 	tx_name varchar(50) NOT NULL,
@@ -42,13 +21,6 @@ CREATE TABLE product (
 	ft_discount float8 NULL,
 	CONSTRAINT product_pkey PRIMARY KEY (id_product)
 );
-
-
--- public.users definition
-
--- Drop table
-
--- DROP TABLE users;
 
 CREATE TABLE users (
 	id_user int4 NOT NULL,
@@ -60,12 +32,6 @@ CREATE TABLE users (
 );
 
 
--- public.wishlist definition
-
--- Drop table
-
--- DROP TABLE wishlist;
-
 CREATE TABLE wishlist (
 	id_user int4 NOT NULL,
 	id_product int4 NOT NULL,
@@ -74,12 +40,6 @@ CREATE TABLE wishlist (
 	CONSTRAINT fkwishlist567841 FOREIGN KEY (id_product) REFERENCES product(id_product)
 );
 
-
--- public."access" definition
-
--- Drop table
-
--- DROP TABLE "access";
 
 CREATE TABLE "access" (
 	id_access int4 NOT NULL,
@@ -90,12 +50,6 @@ CREATE TABLE "access" (
 	CONSTRAINT fkaccess801659 FOREIGN KEY (id_access) REFERENCES users(id_user)
 );
 
-
--- public.order_c definition
-
--- Drop table
-
--- DROP TABLE order_c;
 
 CREATE TABLE order_c (
 	id_order serial4 NOT NULL,
@@ -109,12 +63,6 @@ CREATE TABLE order_c (
 );
 
 
--- public.order_detail definition
-
--- Drop table
-
--- DROP TABLE order_detail;
-
 CREATE TABLE order_detail (
 	id_product int4 NOT NULL,
 	id_order int4 NOT NULL,
@@ -123,13 +71,6 @@ CREATE TABLE order_detail (
 	CONSTRAINT fkorder_detail713322 FOREIGN KEY (id_order) REFERENCES order_c(id_order),
 	CONSTRAINT fkorder_detail999795 FOREIGN KEY (id_product) REFERENCES product(id_product)
 );
-
-
--- public.questions definition
-
--- Drop table
-
--- DROP TABLE questions;
 
 CREATE TABLE questions (
 	id_question serial4 NOT NULL,
@@ -142,13 +83,6 @@ CREATE TABLE questions (
 	CONSTRAINT fkquestions846753 FOREIGN KEY (id_user) REFERENCES users(id_user),
 	CONSTRAINT fkquestions885533 FOREIGN KEY (id_product) REFERENCES product(id_product)
 );
-
-
--- public.reviews definition
-
--- Drop table
-
--- DROP TABLE reviews;
 
 CREATE TABLE reviews (
 	id_review serial4 NOT NULL,

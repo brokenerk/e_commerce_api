@@ -15,7 +15,7 @@ PORT = os.environ.get("PORT")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 DEBUG = True
 
-E_COMMERCE_DB = 'postgresql+psycopg2://{}:{}@{}/{}'.format(USERNAME, PASSWORD, SERVER, DB)
+E_COMMERCE_DB = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(USERNAME, PASSWORD, SERVER, PORT, DB)
 
 SQLALCHEMY_BINDS = {
     'e_commerce': E_COMMERCE_DB
