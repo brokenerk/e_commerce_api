@@ -5,11 +5,11 @@ load_dotenv(find_dotenv())
 
 LOCAL_FOLDER = "/e-commerce/"
 
-USERNAME = os.environ.get("USERNAME")
-PASSWORD = os.environ.get("PASSWORD")
-SERVER = os.environ.get("SERVER")
+USERNAME = os.environ.get("DB_USERNAME")
+PASSWORD = os.environ.get("DB_PASSWORD")
+SERVER = os.environ.get("DB_SERVER")
 DB = os.environ.get("DB")
-PORT = os.environ.get("PORT")
+PORT = os.environ.get("DB_PORT")
 
 #SQLALCHEMY_DATABASE_URI = 'sqlite:////local.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
